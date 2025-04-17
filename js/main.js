@@ -1,55 +1,51 @@
 // Declaro variables
-const mensajeBienvenida = "Bienvenido al gestor de nombres";
-// Array con nombres escritos por el usuario
-let nombres = [];
+const inputNombre = document.getElementById("inputNombre");
+const botonAgregar = document.getElementById("botonAgregar");
+const botonLimpiar = document.getElementById("botonLimpiar");
+const listaNombres = document.getElementById("listaNombres");
+
+// Array donde se guardan los nombres
+let nombres = JSON.parse(localStorage.getItem("nombres")) || [];
+
+// Guardo el array en storage
+function guardarEnStorage() {
+  localStorage.setItem("nombres", JSON.stringify(nombres));
+}
+
+function iniciarPrograma() {
+  listaNombres.innerHTML = "";
+  nombres.forEach((nombre, index) => {
+    const li = document.createElement("li");
+    li.textContent = nombre;
+    li.addEventListener("click", () => eliminarNombre(index));
+    listaNombres.appendChild(li);
+  });
+}
 
 // Función para agregar nombres
 function agregarNombre() {
-  let nombre = prompt("Ingresa un nombre:");
-  if (nombre) {
+  const nombre = inputNombre.value.trim();
+  if (nombre !== "") {
     nombres.push(nombre);
-    console.log(`Nombre agregado: ${nombre}`);
-    alert(`El nombre '${nombre}' ha sido agregado.`);
-  } else {
-    alert("No ingresaste un nombre valido.");
+    guardarEnStorage();
+    iniciarPrograma();
+    inputNombre.value = "";
   }
 }
 
-// Función para mostrar todos los nombres
-function mostrarNombres() {
-  if (nombres.length === 0) {
-    alert("No hay nombres en la lista.");
-  } else {
-    console.log("Lista de nombres:", nombres);
-    alert("Lista de nombres: \n" + nombres.join("\n"));
-  }
+function eliminarNombre(index) {
+  nombres = nombres.filter((_, i) => i !== index);
+  guardarEnStorage();
+  iniciarPrograma();
 }
 
-// Función principal con menú de opciones
-function iniciarPrograma() {
-  alert(mensajeBienvenida);
-  let continuar = true;
+// Eventos
+botonAgregar.addEventListener("click", agregarNombre);
+botonLimpiar.addEventListener("click", () => {
+  nombres = [];
+  guardarEnStorage();
+  iniciarPrograma();
+});
 
-  while (continuar) {
-    let opcion = prompt(
-      "Elige una opción:\n1. Agregar nombre\n2. Mostrar nombres\n3. Salir"
-    );
-
-    switch (opcion) {
-      case "1":
-        agregarNombre();
-        break;
-      case "2":
-        mostrarNombres();
-        break;
-      case "3":
-        continuar = confirm("¿Estás seguro de que deseas salir?");
-        break;
-      default:
-        alert("Opción no válida, intenta nuevamente.");
-    }
-  }
-}
-
-// Ejecutar el programa
+// Ejecucion del programa
 iniciarPrograma();
